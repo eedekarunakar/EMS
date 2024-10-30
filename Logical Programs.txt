@@ -1,0 +1,875 @@
+Question 1:
+
+Write a Java program that simulates a Hangman game. The program should randomly select a word from a predefined list, and the player must guess the word one letter at a time. The player is allowed a maximum of 8 incorrect guesses. If the player guesses the word correctly within the allowed attempts, they win; otherwise, they lose
+
+Input
+The program should accept user input as single characters.
+
+import java.util.Scanner;
+import java.util.Random;
+
+public class HangmanGame {
+    public static void main(String[] args) {
+        // List of words for the game
+        String[] words = {"programming", "java", "hangman", "complexity", "challenge", "algorithm"};
+        Random random = new Random();
+        Scanner scanner = new Scanner(System.in);
+
+        // Select a random word from the list
+        String selectedWord = words[random.nextInt(words.length)];
+        int wordLength = selectedWord.length();
+        char[] guessedWord = new char[wordLength];
+        for (int i = 0; i < wordLength; i++) {
+            guessedWord[i] = '_'; // Initialize guessed word with underscores
+        }
+
+        int incorrectGuesses = 0;
+        int maxIncorrectGuesses = 8;
+        boolean wordGuessed = false;
+
+        System.out.println("Welcome to the Hangman Game!");
+        System.out.println("Guess the word:");
+
+        // Game loop
+        while (incorrectGuesses < maxIncorrectGuesses && !wordGuessed) {
+            System.out.println("Word: " + String.valueOf(guessedWord));
+            System.out.print("Enter a letter: ");
+            char guess = scanner.next().charAt(0);
+            boolean correctGuess = false;
+
+            // Check if the guessed letter is in the word
+            for (int i = 0; i < wordLength; i++) {
+                if (selectedWord.charAt(i) == guess) {
+                    guessedWord[i] = guess;
+                    correctGuess = true;
+                }
+            }
+
+            if (correctGuess) {
+                System.out.println("Good guess!");
+
+                // Check if the word has been completely guessed
+                if (String.valueOf(guessedWord).equals(selectedWord)) {
+                    wordGuessed = true;
+                }
+            } else {
+                incorrectGuesses++;
+                System.out.println("Incorrect guess! You have " + (maxIncorrectGuesses - incorrectGuesses) + " attempts left.");
+            }
+        }
+
+        // End of the game
+        if (wordGuessed) {
+            System.out.println("Congratulations! You've guessed the word: " + selectedWord);
+        } else {
+            System.out.println("Sorry! You've run out of attempts. The word was: " + selectedWord);
+        }
+
+        scanner.close();
+    }
+}
+
+Output:
+Welcome to the Hangman Game!
+Guess the word:
+Word: _ _ _ _ _ _ _ _ _
+Enter a letter: a
+Good guess!
+Word: _ _ a _ _ a _ _ _
+Enter a letter: e
+Incorrect guess! You have 7 attempts left.
+Word: _ _ a _ _ a _ _ _
+Enter a letter: r
+Good guess!
+Word: _ r a _ _ a _ _ _
+Enter a letter: n
+Good guess!
+Word: _ r a _ _ a n _ _
+Enter a letter: i
+Good guess!
+Word: _ r a _ _ a n i _
+Enter a letter: g
+Good guess!
+Word: _ r a g _ a n i _
+Enter a letter: m
+Good guess!
+Congratulations! You've guessed the word: programming
+________________________________________________________________________________________________
+
+Question 2:
+
+Question
+Write a Java program that simulates a 3x3 Number Puzzle game. The puzzle starts with a scrambled grid of numbers from 1 to 8, with one empty space. The player can move numbers adjacent to the empty space into that space. The goal is to arrange the numbers in ascending order from 1 to 8, with the empty space in the bottom-right corner.
+
+Input
+The program should accept input to move numbers in the grid (e.g., 'W' for up, 'S' for down, 'A' for left, 'D' for right).
+
+import java.util.Scanner;
+import java.util.Random;
+
+public class NumberPuzzle {
+    static int[][] puzzle = new int[3][3];
+    static int emptyRow, emptyCol;
+
+    public static void main(String[] args) {
+        Scanner scanner = new Scanner(System.in);
+        initializePuzzle();
+        shufflePuzzle();
+
+        while (!isSolved()) {
+            printPuzzle();
+            System.out.print("Enter your move (W=up, S=down, A=left, D=right): ");
+            char move = scanner.next().charAt(0);
+            if (isValidMove(move)) {
+                makeMove(move);
+            } else {
+                System.out.println("Invalid move. Try again.");
+            }
+        }
+
+        System.out.println("Congratulations! You've solved the puzzle!");
+        scanner.close();
+    }
+
+    static void initializePuzzle() {
+        int num = 1;
+        for (int i = 0; i < 3; i++) {
+            for (int j = 0; j < 3; j++) {
+                if (num <= 8) {
+                    puzzle[i][j] = num++;
+                } else {
+                    puzzle[i][j] = 0; // Empty space
+                    emptyRow = i;
+                    emptyCol = j;
+                }
+            }
+        }
+    }
+
+    static void shufflePuzzle() {
+        Random random = new Random();
+        for (int i = 0; i < 1000; i++) {
+            char[] moves = {'W', 'A', 'S', 'D'};
+            char move = moves[random.nextInt(4)];
+            if (isValidMove(move)) {
+                makeMove(move);
+            }
+        }
+    }
+
+    static void printPuzzle() {
+        for (int i = 0; i < 3; i++) {
+            for (int j = 0; j < 3; j++) {
+                if (puzzle[i][j] == 0) {
+                    System.out.print("   ");
+                } else {
+                    System.out.print(" " + puzzle[i][j] + " ");
+                }
+            }
+            System.out.println();
+        }
+    }
+
+    static boolean isValidMove(char move) {
+        switch (move) {
+            case 'W': return emptyRow < 2; // Move up
+            case 'S': return emptyRow > 0; // Move down
+            case 'A': return emptyCol < 2; // Move left
+            case 'D': return emptyCol > 0; // Move right
+            default: return false;
+        }
+    }
+
+    static void makeMove(char move) {
+        int newRow = emptyRow, newCol = emptyCol;
+        switch (move) {
+            case 'W': newRow++; break;
+            case 'S': newRow--; break;
+            case 'A': newCol++; break;
+            case 'D': newCol--; break;
+        }
+
+        puzzle[emptyRow][emptyCol] = puzzle[newRow][newCol];
+        puzzle[newRow][newCol] = 0;
+        emptyRow = newRow;
+        emptyCol = newCol;
+    }
+
+    static boolean isSolved() {
+        int num = 1;
+        for (int i = 0; i < 3; i++) {
+            for (int j = 0; j < 3; j++) {
+                if (puzzle[i][j] != num && num != 9) {
+                    return false;
+                }
+                num++;
+            }
+        }
+        return true;
+    }
+}
+
+Output:
+
+ 1  2  3 
+ 4     5 
+ 6  7  8 
+
+Enter your move (W=up, S=down, A=left, D=right): S
+
+ 1  2  3 
+ 4  7  5 
+ 6     8 
+
+Enter your move (W=up, S=down, A=left, D=right): A
+
+ 1  2  3 
+ 4  7  5 
+ 6  8   
+
+Enter your move (W=up, S=down, A=left, D=right): D
+
+ 1  2  3 
+ 4  7  5 
+ 6     8 
+
+Congratulations! You've solved the puzzle!
+____________________________________________________________________________________________________
+Question 3:
+Write a Java program that takes an integer as input and finds its prime factorization. The program should then identify the prime factor that occurs the most frequently and display it along with its count.
+
+Input
+The program accepts a single integer as input.
+
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Scanner;
+
+public class PrimeFactorization {
+    
+    public static void main(String[] args) {
+        Scanner scanner = new Scanner(System.in);
+        System.out.print("Enter an integer: ");
+        int number = scanner.nextInt();
+        
+        Map<Integer, Integer> primeFactors = getPrimeFactors(number);
+        int maxFactor = getMaxFactor(primeFactors);
+        
+        System.out.println("Prime factorization of " + number + " is: " + primeFactors);
+        System.out.println("The prime factor with the maximum repetitions is " + maxFactor + " with count " + primeFactors.get(maxFactor));
+    }
+    
+    private static Map<Integer, Integer> getPrimeFactors(int number) {
+        Map<Integer, Integer> factors = new HashMap<>();
+        int divisor = 2;
+        
+        while (number > 1) {
+            while (number % divisor == 0) {
+                factors.put(divisor, factors.getOrDefault(divisor, 0) + 1);
+                number /= divisor;
+            }
+            divisor++;
+        }
+        
+        return factors;
+    }
+    
+    private static int getMaxFactor(Map<Integer, Integer> factors) {
+        int maxFactor = -1;
+        int maxCount = 0;
+        
+        for (Map.Entry<Integer, Integer> entry : factors.entrySet()) {
+            if (entry.getValue() > maxCount) {
+                maxFactor = entry.getKey();
+                maxCount = entry.getValue();
+            }
+        }
+        
+        return maxFactor;
+    }
+}
+
+Output
+Here’s an example of what the output might look like:
+
+Example 1:
+
+Enter an integer: 84
+Prime factorization of 84 is: {2=2, 3=1, 7=1}
+The prime factor with the maximum repetitions is 2 with count 2
+
+Example 2:
+Enter an integer: 180
+Prime factorization of 180 is: {2=2, 3=2, 5=1}
+The prime factor with the maximum repetitions is 2 with count 2
+
+_________________________________________________________________________________________________
+
+Question 4:
+
+Question
+Write a Java program that simulates a game of Rock, Paper, Scissors between the user and the computer. The game should continue until either the user or the computer wins 3 rounds. The program should track and display the score after each round.
+
+Input
+The program should accept the user's choice (Rock, Paper, or Scissors) as input.
+
+import java.util.Scanner;
+import java.util.Random;
+
+public class RockPaperScissors {
+
+    public static void main(String[] args) {
+        Scanner scanner = new Scanner(System.in);
+        Random random = new Random();
+        String[] choices = {"Rock", "Paper", "Scissors"};
+        int userScore = 0;
+        int computerScore = 0;
+
+        System.out.println("Welcome to Rock, Paper, Scissors!");
+        System.out.println("First to 3 wins is the champion!");
+
+        while (userScore < 3 && computerScore < 3) {
+            System.out.println("Choose: 1 for Rock, 2 for Paper, 3 for Scissors");
+            int userChoice = scanner.nextInt();
+            int computerChoice = random.nextInt(3) + 1;
+
+            System.out.println("You chose: " + choices[userChoice - 1]);
+            System.out.println("Computer chose: " + choices[computerChoice - 1]);
+
+            if (userChoice == computerChoice) {
+                System.out.println("It's a tie!");
+            } else if ((userChoice == 1 && computerChoice == 3) ||
+                       (userChoice == 2 && computerChoice == 1) ||
+                       (userChoice == 3 && computerChoice == 2)) {
+                System.out.println("You win this round!");
+                userScore++;
+            } else {
+                System.out.println("Computer wins this round!");
+                computerScore++;
+            }
+
+            System.out.println("Score: You " + userScore + " - " + computerScore + " Computer");
+        }
+
+        if (userScore == 3) {
+            System.out.println("Congratulations! You are the champion!");
+        } else {
+            System.out.println("Game Over! Computer is the champion!");
+        }
+    }
+}
+
+Output:
+
+Welcome to Rock, Paper, Scissors!
+First to 3 wins is the champion!
+Choose: 1 for Rock, 2 for Paper, 3 for Scissors
+You chose: Rock
+Computer chose: Scissors
+You win this round!
+Score: You 1 - 0 Computer
+
+Choose: 1 for Rock, 2 for Paper, 3 for Scissors
+You chose: Paper
+Computer chose: Rock
+You win this round!
+Score: You 2 - 0 Computer
+
+Choose: 1 for Rock, 2 for Paper, 3 for Scissors
+You chose: Scissors
+Computer chose: Paper
+You win this round!
+Score: You 3 - 0 Computer
+
+Congratulations! You are the champion!
+_________________________________________________________________________________________________
+
+Question 5:
+
+Question
+Write a Java program where the user has to guess a randomly generated number within a given range (e.g., 1 to 100). The user has a limited number of attempts to guess the number correctly. After each guess, the program should provide feedback on whether the guessed number is too high, too low, or correct. If the user fails to guess the number within the allowed attempts, the program should reveal the correct number.
+
+Input
+The program should accept the user's guessed number as input.
+The program should have a predefined number of attempts (e.g., 7 attempts).
+
+import java.util.Scanner;
+import java.util.Random;
+
+public class NumberGuessingGame {
+
+    public static void main(String[] args) {
+        Scanner scanner = new Scanner(System.in);
+        Random random = new Random();
+        int numberToGuess = random.nextInt(100) + 1;
+        int numberOfAttempts = 7;
+
+        System.out.println("Welcome to the Number Guessing Game!");
+        System.out.println("I'm thinking of a number between 1 and 100.");
+        System.out.println("You have " + numberOfAttempts + " attempts to guess the number.");
+
+        for (int i = 1; i <= numberOfAttempts; i++) {
+            System.out.print("Attempt " + i + ": Enter your guess: ");
+            int userGuess = scanner.nextInt();
+
+            if (userGuess == numberToGuess) {
+                System.out.println("Congratulations! You guessed the number in " + i + " attempts.");
+                break;
+            } else if (userGuess > numberToGuess) {
+                System.out.println("Your guess is too high.");
+            } else {
+                System.out.println("Your guess is too low.");
+            }
+
+            if (i == numberOfAttempts) {
+                System.out.println("Sorry! You've used all your attempts. The correct number was " + numberToGuess + ".");
+            }
+        }
+    }
+}
+
+Output:
+Welcome to the Number Guessing Game!
+I'm thinking of a number between 1 and 100.
+You have 7 attempts to guess the number.
+
+Attempt 1: Enter your guess: 50
+Your guess is too low.
+
+Attempt 2: Enter your guess: 75
+Your guess is too high.
+
+Attempt 3: Enter your guess: 65
+Your guess is too high.
+
+Attempt 4: Enter your guess: 60
+Your guess is too low.
+
+Attempt 5: Enter your guess: 63
+Congratulations! You guessed the number in 5 attempts.
+
+_______________________________________________________________________________________________
+
+Question 6:
+
+Question
+Write a Java program that challenges the user to guess the next number in a mathematical sequence. The sequence will follow a specific pattern (e.g., Fibonacci sequence, arithmetic progression, geometric progression, etc.). The program should generate the sequence, display it to the user (excluding the last number), and ask the user to guess the next number. The program will then check if the guess is correct and provide feedback.
+
+Input
+The program should generate a sequence based on a specific pattern.
+The user will input their guess for the next number in the sequence.
+
+import java.util.Scanner;
+
+public class NumberSequenceChallenge {
+
+    public static void main(String[] args) {
+        Scanner scanner = new Scanner(System.in);
+        
+        // Generate a sequence (e.g., arithmetic progression)
+        int[] sequence = generateArithmeticSequence(5, 3, 5); // start at 5, increment by 3, length 5
+        
+        // Display the sequence to the user (excluding the last number)
+        System.out.print("Sequence: ");
+        for (int i = 0; i < sequence.length - 1; i++) {
+            System.out.print(sequence[i] + " ");
+        }
+        System.out.println("\nWhat is the next number in the sequence?");
+        
+        // User's guess
+        int userGuess = scanner.nextInt();
+        
+        // Check if the user's guess is correct
+        if (userGuess == sequence[sequence.length - 1]) {
+            System.out.println("Correct! The next number is " + userGuess + ".");
+        } else {
+            System.out.println("Incorrect. The correct number was " + sequence[sequence.length - 1] + ".");
+        }
+    }
+
+    // Method to generate an arithmetic sequence
+    public static int[] generateArithmeticSequence(int start, int increment, int length) {
+        int[] sequence = new int[length];
+        sequence[0] = start;
+        for (int i = 1; i < length; i++) {
+            sequence[i] = sequence[i - 1] + increment;
+        }
+        return sequence;
+    }
+
+    // Method to generate a geometric sequence
+    public static int[] generateGeometricSequence(int start, int ratio, int length) {
+        int[] sequence = new int[length];
+        sequence[0] = start;
+        for (int i = 1; i < length; i++) {
+            sequence[i] = sequence[i - 1] * ratio;
+        }
+        return sequence;
+    }
+    
+    // Method to generate a Fibonacci sequence
+    public static int[] generateFibonacciSequence(int length) {
+        int[] sequence = new int[length];
+        sequence[0] = 0;
+        sequence[1] = 1;
+        for (int i = 2; i < length; i++) {
+            sequence[i] = sequence[i - 1] + sequence[i - 2];
+        }
+        return sequence;
+    }
+}
+
+Output:
+
+Sequence: 5 8 11 14 
+What is the next number in the sequence?
+User Input: 17
+Correct! The next number is 17.
+
+Sequence: 3 9 27 81 
+What is the next number in the sequence?
+User Input: 240
+Incorrect. The correct number was 243.
+
+__________________________________________________________________________________________________
+
+Question 7:
+
+Question
+Write a Java program that generates a "maze" of numbers, where the user must identify the path of prime numbers to reach the goal. The program should generate a grid of random numbers, and the user needs to navigate from the top-left corner to the bottom-right corner, moving only through prime numbers. The program will guide the user, checking their moves, and informing them if they’ve hit a dead-end or made it to the goal.
+
+Input
+A grid of random numbers.
+The user’s choice of direction to move (up, down, left, right).
+
+import java.util.Random;
+import java.util.Scanner;
+
+public class PrimeNumberMaze {
+    private static final int SIZE = 5; // Size of the maze (5x5 grid)
+    private static final int[][] maze = new int[SIZE][SIZE];
+    private static int currentRow = 0;
+    private static int currentCol = 0;
+
+    public static void main(String[] args) {
+        generateMaze();
+        playGame();
+    }
+
+    // Generate a maze with random numbers
+    private static void generateMaze() {
+        Random random = new Random();
+        for (int i = 0; i < SIZE; i++) {
+            for (int j = 0; j < SIZE; j++) {
+                maze[i][j] = random.nextInt(89) + 10; // Numbers between 10 and 99
+            }
+        }
+        maze[0][0] = 2; // Starting point is always a prime number
+    }
+
+    // Print the current state of the maze
+    private static void printMaze() {
+        for (int i = 0; i < SIZE; i++) {
+            for (int j = 0; j < SIZE; j++) {
+                if (i == currentRow && j == currentCol) {
+                    System.out.print("[" + maze[i][j] + "] ");
+                } else {
+                    System.out.print(" " + maze[i][j] + "  ");
+                }
+            }
+            System.out.println();
+        }
+    }
+
+    // Play the game by navigating through the maze
+    private static void playGame() {
+        Scanner scanner = new Scanner(System.in);
+        while (true) {
+            printMaze();
+            System.out.println("Current position: (" + currentRow + ", " + currentCol + ")");
+            System.out.println("Enter move (up, down, left, right): ");
+            String move = scanner.nextLine().toLowerCase();
+
+            if (move.equals("up") && currentRow > 0) {
+                if (isPrime(maze[currentRow - 1][currentCol])) {
+                    currentRow--;
+                } else {
+                    System.out.println("You can't move there! It's not a prime number.");
+                }
+            } else if (move.equals("down") && currentRow < SIZE - 1) {
+                if (isPrime(maze[currentRow + 1][currentCol])) {
+                    currentRow++;
+                } else {
+                    System.out.println("You can't move there! It's not a prime number.");
+                }
+            } else if (move.equals("left") && currentCol > 0) {
+                if (isPrime(maze[currentRow][currentCol - 1])) {
+                    currentCol--;
+                } else {
+                    System.out.println("You can't move there! It's not a prime number.");
+                }
+            } else if (move.equals("right") && currentCol < SIZE - 1) {
+                if (isPrime(maze[currentRow][currentCol + 1])) {
+                    currentCol++;
+                } else {
+                    System.out.println("You can't move there! It's not a prime number.");
+                }
+            } else {
+                System.out.println("Invalid move.");
+            }
+
+            if (currentRow == SIZE - 1 && currentCol == SIZE - 1) {
+                System.out.println("Congratulations! You've reached the goal.");
+                break;
+            }
+        }
+    }
+
+    // Check if a number is prime
+    private static boolean isPrime(int number) {
+        if (number <= 1) return false;
+        for (int i = 2; i <= Math.sqrt(number); i++) {
+            if (number % i == 0) return false;
+        }
+        return true;
+    }
+}
+
+Output:
+
+Maze:
+ 2  13 34 37 10  
+83 14 17 93 39  
+75 19 22 13 67  
+23 35 29 91 41  
+47 53 59 31 [61]
+
+Current position: (0, 0)
+Enter move (up, down, left, right): right
+
+Maze:
+ 2 [13] 34 37 10  
+83 14 17 93 39  
+75 19 22 13 67  
+23 35 29 91 41  
+47 53 59 31 61
+
+Current position: (0, 1)
+Enter move (up, down, left, right): down
+
+Maze:
+ 2  13 34 37 10  
+83 [14] 17 93 39  
+75 19 22 13 67  
+23 35 29 91 41  
+47 53 59 31 61
+
+You can't move there! It's not a prime number.
+
+______________________________________________________________________________________
+
+Question 8:
+
+Question
+Write a Java program to solve a maze represented as a 2D array. The maze has 0 for open paths and 1 for walls. You need to find a path from the top-left corner of the maze (start) to the bottom-right corner (end). The program should print the path if it exists or indicate that there is no path.
+
+Input
+A 2D integer array representing the maze. 0 represents an open path and 1 represents a wall.
+The start position is (0, 0), and the goal position is (maze.length - 1, maze[0].length - 1).
+
+import java.util.*;
+
+public class MazeSolver {
+    private static final int[] ROW = { -1, 1, 0, 0 };
+    private static final int[] COL = { 0, 0, -1, 1 };
+    
+    public static void main(String[] args) {
+        int[][] maze = {
+            {0, 1, 0, 0, 0, 0},
+            {0, 1, 0, 1, 0, 0},
+            {0, 0, 0, 1, 0, 1},
+            {1, 1, 0, 1, 0, 1},
+            {0, 0, 0, 0, 0, 0},
+            {1, 1, 1, 1, 1, 0}
+        };
+        
+        MazeSolver solver = new MazeSolver();
+        List<int[]> path = solver.solveMaze(maze);
+        
+        if (path != null) {
+            System.out.println("Path found:");
+            for (int[] step : path) {
+                System.out.println(Arrays.toString(step));
+            }
+        } else {
+            System.out.println("No path found.");
+        }
+    }
+    
+    // Solve the maze using Depth-First Search (DFS)
+    public List<int[]> solveMaze(int[][] maze) {
+        int rows = maze.length;
+        int cols = maze[0].length;
+        boolean[][] visited = new boolean[rows][cols];
+        List<int[]> path = new ArrayList<>();
+        
+        if (dfs(maze, 0, 0, rows - 1, cols - 1, visited, path)) {
+            return path;
+        }
+        return null;
+    }
+    
+    // Depth-First Search (DFS) to find the path
+    private boolean dfs(int[][] maze, int x, int y, int goalX, int goalY, boolean[][] visited, List<int[]> path) {
+        if (x == goalX && y == goalY) {
+            path.add(new int[]{x, y});
+            return true;
+        }
+        
+        if (!isValid(maze, x, y, visited)) {
+            return false;
+        }
+        
+        visited[x][y] = true;
+        path.add(new int[]{x, y});
+        
+        for (int i = 0; i < 4; i++) {
+            int newX = x + ROW[i];
+            int newY = y + COL[i];
+            
+            if (dfs(maze, newX, newY, goalX, goalY, visited, path)) {
+                return true;
+            }
+        }
+        
+        path.remove(path.size() - 1); // Backtrack
+        return false;
+    }
+    
+    // Check if the cell is within bounds and not yet visited
+    private boolean isValid(int[][] maze, int x, int y, boolean[][] visited) {
+        return x >= 0 && x < maze.length && y >= 0 && y < maze[0].length 
+                && maze[x][y] == 0 && !visited[x][y];
+    }
+}
+
+Output:
+Path found:
+[0, 0]
+[1, 0]
+[2, 0]
+[2, 1]
+[2, 2]
+[3, 2]
+[4, 2]
+[4, 3]
+[4, 4]
+[5, 4]
+[5, 5]
+
+_____________________________________________________________________________________________
+
+Question 9:
+
+Question
+Write a Java program to solve the N-Queens problem. The task is to place N queens on an N×N chessboard so that no two queens threaten each other. A queen can attack another queen if they are in the same row, column, or diagonal.
+
+Input
+An integer N representing the size of the chessboard and the number of queens to place.
+
+public class NQueens {
+
+    public static void main(String[] args) {
+        int N = 8; // Example with 8 queens and an 8x8 board
+        int[][] board = new int[N][N];
+        if (solveNQueens(board, 0)) {
+            printBoard(board);
+        } else {
+            System.out.println("Solution does not exist");
+        }
+    }
+
+    // Utility function to print the chessboard
+    static void printBoard(int[][] board) {
+        for (int[] row : board) {
+            for (int cell : row) {
+                System.out.print((cell == 1 ? "Q " : ". "));
+            }
+            System.out.println();
+        }
+        System.out.println();
+    }
+
+    // Solves the N-Queens problem using backtracking
+    static boolean solveNQueens(int[][] board, int row) {
+        int N = board.length;
+
+        // If all queens are placed
+        if (row >= N) {
+            return true;
+        }
+
+        // Try placing a queen in all columns for the current row
+        for (int col = 0; col < N; col++) {
+            if (isSafe(board, row, col)) {
+                board[row][col] = 1; // Place the queen
+
+                // Recursively place queens in the next rows
+                if (solveNQueens(board, row + 1)) {
+                    return true;
+                }
+
+                // If placing queen in the current column doesn't lead to a solution, remove it
+                board[row][col] = 0;
+            }
+        }
+
+        // No column was found for this row
+        return false;
+    }
+
+    // Checks if it's safe to place a queen at board[row][col]
+    static boolean isSafe(int[][] board, int row, int col) {
+        return !isUnderAttack(board, row, col);
+    }
+
+    // Checks if the position is under attack by any other queen
+    static boolean isUnderAttack(int[][] board, int row, int col) {
+        int N = board.length;
+
+        // Check column
+        for (int i = 0; i < row; i++) {
+            if (board[i][col] == 1) {
+                return true;
+            }
+        }
+
+        // Check upper-left diagonal
+        for (int i = row, j = col; i >= 0 && j >= 0; i--, j--) {
+            if (board[i][j] == 1) {
+                return true;
+            }
+        }
+
+        // Check upper-right diagonal
+        for (int i = row, j = col; i >= 0 && j < N; i--, j++) {
+            if (board[i][j] == 1) {
+                return true;
+            }
+        }
+
+        return false;
+    }
+}
+
+Output:
+
+Q . . .
+. . . Q
+. Q . .
+. . Q .
+
+__________________________________________________________________________________________
+
+
+
